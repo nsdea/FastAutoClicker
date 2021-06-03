@@ -1,26 +1,38 @@
+'''The main autoclicker program
+
+IMPORTANT: Windows capped the CPS for me to 63-66, just so you know.
+Also, most of the games, like Minecraft 1.8.9+ have cooldowns or something
+like that, so you may mess around with the parameters a bit and do some
+testing before actually using it.
+'''
+
+
 import time
 import mouse
-import keyboard
+import random
+import keyboard 
 
 class Clicker:
-    def __init__(self, key='tab', mode: bool=True, button: str='left', cps: int=10, optimize_cps=True):
+    def __init__(self, key='tab', mode: bool=True, button: str='left', cps: int=10, optimize_cps=True, randomize=0):
         '''
         key (str): key to enable/disable the autoclicker, examples: 'tab' or 'space' or 'x' or 'shift' or 'ctrl'
         mode (bool): True: press <key> to activate, press again to deactivate. False: Autoclick only when <key> is pressed. 
         button (str): 'left' or 'right' mouse button, example: 'left' - can also be a key, like 'a' or 'space'.
         cps (int): the approx. amount of **clicks done per second** - higher values may not work as high as expected, example: 10 - Set CPS to 0 to make it hold <button>
         optimize_cps (bool): if CPS optimization should be used to get more accurate/higher CPS - this should be used on lower CPS values
+        randomize (int): How much the CPS should be randomized.
         '''
 
         self.key = key
         self.mode = mode
         self.button = button
+        self.randomize = randomize
 
         if optimize_cps:
             if cps > 85:
                 cps *= 6
             elif cps > 50:
-                cps *= 6
+                cps *= 4
             elif cps > 30:
                 cps *= 2
             elif cps > 15:
@@ -67,10 +79,15 @@ class Clicker:
             if globals()['ac_active']:
                 if self.cps == 0:
                     keyboard.press(self.button)
-                else:
+                else:   
                     mouse.click(button=self.button)
                     if self.cooldown:
-                        time.sleep(1/self.cps)
+                        actual_cps = self.cps
+                        actual_cps =  actual_cps + random.randint((self.randomize//2)*-1, (self.randomize//2))
+
+                        print(actual_cps)
+
+                        time.sleep(1/actual_cps)
             elif (not globals()['ac_active']) and self.cps == 0:
                 keyboard.release(self.button)
 
@@ -87,5 +104,5 @@ class Clicker:
         self.run()
 
 if __name__ == '__main__':
-    c = Clicker(key='tab', mode=True, button='w', cps=20, optimize_cps=True)
-    c.start()                       
+    c = Clicker(key='tab', mode=True, button='left', cps=100, optimize_cps=True, randomize=0)
+    c.start()
